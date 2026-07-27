@@ -280,6 +280,11 @@
         if (statusVal === "Pendente" || statusVal === "Em Andamento") {
             grupoProgresso.style.display = "block";
             selectProgresso.setAttribute("required", "required");
+            
+            // Se selecionar "Em Andamento", pré-preenche automaticamente com "🏁 Concluída hoje (continua)" caso esteja vazio
+            if (statusVal === "Em Andamento" && !selectProgresso.value) {
+                selectProgresso.value = "🏁 Concluída hoje (continua)";
+            }
         } else {
             grupoProgresso.style.display = "none";
             selectProgresso.removeAttribute("required");
@@ -310,7 +315,6 @@
             const d = JSON.parse(salvo);
             
             if (d.deveReiniciarProximaVez) {
-                // Prepara a próxima vez já reiniciada com o prefixo Continuação e limpa a etapa de hoje
                 let nomeOriginal = d.atividade || '';
                 if (nomeOriginal.startsWith("Continuação: ")) {
                     nomeOriginal = nomeOriginal.replace("Continuação: ", "");
@@ -324,15 +328,12 @@
                 document.getElementById('local').value = d.local || '';
                 document.getElementById('skymunck').value = d.skymunck || 'Não';
                 
-                // Reseta os campos que devem vir limpos
                 document.getElementById('status').value = "Iniciado hoje";
                 document.getElementById('progresso_hoje').value = ''; 
                 document.getElementById('comentarios').value = '';
                 
-                // Remove a flag para não ficar reiniciando toda vez que mexer no input
                 salvarRascunho();
             } else {
-                // Carregamento normal
                 document.getElementById('atividade').value = d.atividade || '';
                 document.getElementById('etapa_hoje').value = d.etapa_hoje || '';
                 document.getElementById('chamado').value = d.chamado || '';
@@ -372,13 +373,14 @@
         const statusGeral = document.getElementById('status').value;
         const progressoHoje = document.getElementById('progresso_hoje').value;
 
+        // Objeto formatado com todas as colunas para o Google Sheets
         const d = {
             atividade: document.getElementById('atividade').value,
             etapa_hoje: document.getElementById('etapa_hoje').value,
             data: document.getElementById('data_auto').value,
             hora: document.getElementById('hora_auto').value,
             chamado: document.getElementById('chamado').value.toUpperCase(),
-            equipe: equipeSelecionada.join('\n'), 
+            equipe: equipeSelecionada.join(', '), // Separado por vírgula ou \n conforme sua preferência na planilha
             site: document.getElementById('site').value,
             local: document.getElementById('local').value,
             skymunck: document.getElementById('skymunck').value,
@@ -427,7 +429,6 @@
 
         window.open(`https://api.whatsapp.com/send?text=${mensagem}`, '_blank');
         
-        // Verifica se foi concluído: se sim, zera tudo. Se marcou continuação, salva com a regra de reiniciar na próxima.
         if (statusGeral === "Concluído" || progressoHoje === "🏁 Concluída hoje") {
             localStorage.removeItem('rascunho_atividade_v1');
             setTimeout(() => {
