@@ -127,12 +127,22 @@
         </div>
 
         <div class="form-group">
-            <label>Status:</label>
+            <label>Status Geral:</label>
             <select id="status" required>
                 <option value="">Selecione...</option>
                 <option value="Concluído">✅ Concluído</option>
                 <option value="Pendente">⚠️ Pendente</option>
                 <option value="Em Andamento">⏳ Em Andamento</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Progresso de Hoje:</label>
+            <select id="progresso_hoje" required>
+                <option value="">Selecione...</option>
+                <option value="🚀 Iniciada hoje">🚀 Iniciada hoje</option>
+                <option value="⏳ Em andamento (continua amanhã)">⏳ Em andamento (continua amanhã)</option>
+                <option value="🏁 Concluída hoje">🏁 Concluída hoje</option>
             </select>
         </div>
 
@@ -258,6 +268,7 @@
             local: document.getElementById('local').value,
             skymunck: document.getElementById('skymunck').value,
             status: document.getElementById('status').value,
+            progresso: document.getElementById('progresso_hoje').value,
             obs: document.getElementById('comentarios').value || "Nenhuma observação."
         };
 
@@ -286,7 +297,9 @@
             `${sep}%0A` +
             `*Utilização SkyMunck:*%0A${d.skymunck}%0A` +
             `${sep}%0A` +
-            `*Status:*%0A${d.status}%0A` +
+            `*Status Geral:*%0A${d.status}%0A` +
+            `${sep}%0A` +
+            `*Progresso de Hoje:*%0A${d.progresso}%0A` +
             `${sep}%0A` +
             `*Comentários:*%0A${d.obs}%0A` +
             `${sep}`;
