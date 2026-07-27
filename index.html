@@ -128,19 +128,20 @@
 
         <div class="form-group">
             <label>Status Geral:</label>
-            <select id="status" required>
-                <option value="">Selecione...</option>
+            <select id="status" onchange="verificarStatusGeral()" required>
+                <option value="Iniciado hoje" selected>🚀 Iniciada hoje</option>
                 <option value="Concluído">✅ Concluído</option>
                 <option value="Pendente">⚠️ Pendente</option>
                 <option value="Em Andamento">⏳ Em Andamento</option>
+                <option value="Continuação">🔄 Continuação</option>
             </select>
         </div>
 
-        <div class="form-group">
+        <!-- Oculto por padrão, aparece apenas se Pendente ou Em Andamento -->
+        <div class="form-group" id="grupoProgresso" style="display: none;">
             <label>Progresso de Hoje:</label>
-            <select id="progresso_hoje" required>
+            <select id="progresso_hoje">
                 <option value="">Selecione...</option>
-                <option value="🚀 Iniciada hoje">🚀 Iniciada hoje</option>
                 <option value="⏳ Em andamento (continua amanhã)">⏳ Em andamento (continua amanhã)</option>
                 <option value="🏁 Concluída hoje">🏁 Concluída hoje</option>
             </select>
@@ -253,10 +254,29 @@
         document.getElementById('hora_auto').value = agora.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
     }
 
+    function verificarStatusGeral() {
+        const statusVal = document.getElementById('status').value;
+        const grupoProgresso = document.getElementById('grupoProgresso');
+        const selectProgresso = document.getElementById('progresso_hoje');
+
+        // Se for Pendente ou Em Andamento, exibe a opção de progresso
+        if (statusVal === "Pendente" || statusVal === "Em Andamento") {
+            grupoProgresso.style.display = "block";
+            selectProgresso.setAttribute("required", "required");
+        } else {
+            grupoProgresso.style.display = "none";
+            selectProgresso.removeAttribute("required");
+            selectProgresso.value = "";
+        }
+    }
+
     async function enviarRelatorio() {
         const form = document.getElementById('mainForm');
         if (equipeSelecionada.length === 0) { alert("Adicione pelo menos um técnico!"); return; }
         if (!form.checkValidity()) { form.reportValidity(); return; }
+
+        const statusGeral = document.getElementById('status').value;
+        const progressoHoje = document.getElementById('progresso_hoje').value;
 
         const d = {
             atividade: document.getElementById('atividade').value,
@@ -267,8 +287,8 @@
             site: document.getElementById('site').value,
             local: document.getElementById('local').value,
             skymunck: document.getElementById('skymunck').value,
-            status: document.getElementById('status').value,
-            progresso: document.getElementById('progresso_hoje').value,
+            status: statusGeral,
+            progresso: (statusGeral === "Pendente" || statusGeral === "Em Andamento") ? progressoHoje : "N/A",
             obs: document.getElementById('comentarios').value || "Nenhuma observação."
         };
 
@@ -279,6 +299,11 @@
         const sep = "----------------------------------------";
         const equipeWhats = encodeURIComponent(equipeSelecionada.join('\n'));
         
+        let blocoProgressoWhats = "";
+        if (d.progresso !== "N/A") {
+            blocoProgressoWhats = `*Progresso de Hoje:*%0A${d.progresso}%0A${sep}%0A`;
+        }
+
         const mensagem = `*RELATÓRIO DE ATIVIDADE*%0A` +
             `${sep}%0A%0A` +
             `*Atividade:*%0A${d.atividade}%0A` +
@@ -299,8 +324,7 @@
             `${sep}%0A` +
             `*Status Geral:*%0A${d.status}%0A` +
             `${sep}%0A` +
-            `*Progresso de Hoje:*%0A${d.progresso}%0A` +
-            `${sep}%0A` +
+            blocoProgressoWhats +
             `*Comentários:*%0A${d.obs}%0A` +
             `${sep}`;
 
@@ -312,12 +336,15 @@
             renderBadges();
             atualizarSelect();
             atualizarDataHora();
+            document.getElementById('status').value = "Iniciado hoje";
+            verificarStatusGeral();
         }, 1000);
     }
 
     window.onload = function() {
         atualizarDataHora();
         atualizarSelect();
+        verificarStatusGeral();
     };
 </script>
 </body>
