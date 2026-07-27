@@ -86,11 +86,6 @@
             <input type="text" id="atividade" placeholder="Ex: Manutenção Preventiva" oninput="salvarRascunho()" required>
         </div>
 
-        <div class="form-group">
-            <label>Etapa realizada hoje:</label>
-            <input type="text" id="etapa_hoje" placeholder="Ex: Lançamento de cabo óptico" oninput="salvarRascunho()" required>
-        </div>
-
         <div style="display: flex; gap: 10px;">
             <div class="form-group" style="flex:1">
                 <label>Data:</label>
@@ -157,6 +152,12 @@
                 <option value="🏁 Concluída hoje (continua)">🏁 Concluída hoje (continua)</option>
                 <option value="🏁 Concluída hoje">🏁 Concluída hoje</option>
             </select>
+        </div>
+
+        <!-- Campo Etapa Realizada Hoje (Aparece abaixo de Progresso de Hoje apenas quando Pendente/Em Andamento) -->
+        <div class="form-group" id="grupoEtapaHoje" style="display: none;">
+            <label>Etapa realizada hoje:</label>
+            <input type="text" id="etapa_hoje" placeholder="Ex: Lançamento de cabo óptico" oninput="salvarRascunho()">
         </div>
 
         <div class="form-group">
@@ -276,11 +277,16 @@
         const statusVal = document.getElementById('status').value;
         const grupoProgresso = document.getElementById('grupoProgresso');
         const selectProgresso = document.getElementById('progresso_hoje');
+        const grupoEtapaHoje = document.getElementById('grupoEtapaHoje');
+        const inputEtapaHoje = document.getElementById('etapa_hoje');
 
         if (statusVal === "Pendente" || statusVal === "Em Andamento") {
             grupoProgresso.style.display = "block";
             selectProgresso.setAttribute("required", "required");
             
+            grupoEtapaHoje.style.display = "block";
+            inputEtapaHoje.setAttribute("required", "required");
+
             // Se selecionar "Em Andamento", pré-preenche automaticamente com "🏁 Concluída hoje (continua)" caso esteja vazio
             if (statusVal === "Em Andamento" && !selectProgresso.value) {
                 selectProgresso.value = "🏁 Concluída hoje (continua)";
@@ -289,22 +295,33 @@
             grupoProgresso.style.display = "none";
             selectProgresso.removeAttribute("required");
             selectProgresso.value = "";
+
+            grupoEtapaHoje.style.display = "none";
+            inputEtapaHoje.removeAttribute("required");
+            inputEtapaHoje.value = "";
         }
     }
 
     function salvarRascunho() {
+        const statusVal = document.getElementById('status').value;
+        const progressoVal = document.getElementById('progresso_hoje').value;
+        const temEtapa = (statusVal === "Pendente" || statusVal === "Em Andamento");
+
+        // Se o progresso for "Concluída hoje" (sem continuação), não salvamos rascunho de continuação
+        const deveReiniciarProximaVez = (temEtapa && progressoVal === "🏁 Concluída hoje (continua)");
+
         const dadosRascunho = {
             atividade: document.getElementById('atividade').value,
-            etapa_hoje: document.getElementById('etapa_hoje').value,
+            etapa_hoje: temEtapa ? document.getElementById('etapa_hoje').value : '',
             chamado: document.getElementById('chamado').value,
             equipe: equipeSelecionada,
             site: document.getElementById('site').value,
             local: document.getElementById('local').value,
             skymunck: document.getElementById('skymunck').value,
-            status: document.getElementById('status').value,
-            progresso: document.getElementById('progresso_hoje').value,
+            status: statusVal,
+            progresso: temEtapa ? progressoVal : '',
             obs: document.getElementById('comentarios').value,
-            deveReiniciarProximaVez: (document.getElementById('progresso_hoje').value === "🏁 Concluída hoje (continua)")
+            deveReiniciarProximaVez: deveReiniciarProximaVez
         };
         localStorage.setItem('rascunho_atividade_v1', JSON.stringify(dadosRascunho));
     }
@@ -320,7 +337,6 @@
                     nomeOriginal = nomeOriginal.replace("Continuação: ", "");
                 }
                 document.getElementById('atividade').value = "Continuação: " + nomeOriginal;
-                document.getElementById('etapa_hoje').value = '';
                 document.getElementById('chamado').value = d.chamado || '';
                 equipeSelecionada = d.equipe || [];
                 renderBadges();
@@ -330,12 +346,12 @@
                 
                 document.getElementById('status').value = "Iniciado hoje";
                 document.getElementById('progresso_hoje').value = ''; 
+                document.getElementById('etapa_hoje').value = '';
                 document.getElementById('comentarios').value = '';
                 
                 salvarRascunho();
             } else {
                 document.getElementById('atividade').value = d.atividade || '';
-                document.getElementById('etapa_hoje').value = d.etapa_hoje || '';
                 document.getElementById('chamado').value = d.chamado || '';
                 equipeSelecionada = d.equipe || [];
                 renderBadges();
@@ -344,6 +360,7 @@
                 document.getElementById('skymunck').value = d.skymunck || 'Não';
                 document.getElementById('status').value = d.status || "Iniciado hoje";
                 document.getElementById('progresso_hoje').value = d.progresso || ''; 
+                document.getElementById('etapa_hoje').value = d.etapa_hoje || '';
                 document.getElementById('comentarios').value = d.obs || '';
             }
         } else {
@@ -372,20 +389,21 @@
 
         const statusGeral = document.getElementById('status').value;
         const progressoHoje = document.getElementById('progresso_hoje').value;
+        const etapaHojeVal = document.getElementById('etapa_hoje').value;
+        const ativoComEtapa = (statusGeral === "Pendente" || statusGeral === "Em Andamento");
 
-        // Objeto formatado com todas as colunas para o Google Sheets
         const d = {
             atividade: document.getElementById('atividade').value,
-            etapa_hoje: document.getElementById('etapa_hoje').value,
+            etapa_hoje: ativoComEtapa ? etapaHojeVal : "N/A",
             data: document.getElementById('data_auto').value,
             hora: document.getElementById('hora_auto').value,
             chamado: document.getElementById('chamado').value.toUpperCase(),
-            equipe: equipeSelecionada.join(', '), // Separado por vírgula ou \n conforme sua preferência na planilha
+            equipe: equipeSelecionada.join(', '), 
             site: document.getElementById('site').value,
             local: document.getElementById('local').value,
             skymunck: document.getElementById('skymunck').value,
             status: statusGeral,
-            progresso: (statusGeral === "Pendente" || statusGeral === "Em Andamento") ? progressoHoje : "N/A",
+            progresso: ativoComEtapa ? progressoHoje : "N/A",
             obs: document.getElementById('comentarios').value || "Nenhuma observação."
         };
 
@@ -396,16 +414,15 @@
         const sep = "----------------------------------------";
         const equipeWhats = encodeURIComponent(equipeSelecionada.join('\n'));
         
-        let blocoProgressoWhats = "";
-        if (d.progresso !== "N/A") {
-            blocoProgressoWhats = `*Progresso de Hoje:*%0A${d.progresso}%0A${sep}%0A`;
+        let blocoExtraWhats = "";
+        if (ativoComEtapa) {
+            blocoExtraWhats = `*Progresso de Hoje:*%0A${d.progresso}%0A${sep}%0A` +
+                              `*Etapa Realizada Hoje:*%0A${d.etapa_hoje}%0A${sep}%0A`;
         }
 
         const mensagem = `*RELATÓRIO DE ATIVIDADE*%0A` +
             `${sep}%0A%0A` +
             `*Atividade:*%0A${d.atividade}%0A` +
-            `${sep}%0A` +
-            `*Etapa Realizada Hoje:*%0A${d.etapa_hoje}%0A` +
             `${sep}%0A` +
             `*Data:*%0A${d.data}%0A` +
             `${sep}%0A` +
@@ -423,12 +440,14 @@
             `${sep}%0A` +
             `*Status Geral:*%0A${d.status}%0A` +
             `${sep}%0A` +
-            blocoProgressoWhats +
+            blocoExtraWhats +
             `*Comentários:*%0A${d.obs}%0A` +
             `${sep}`;
 
         window.open(`https://api.whatsapp.com/send?text=${mensagem}`, '_blank');
         
+        // Regra de limpeza ao enviar:
+        // Se for "Concluído", Status Concluído ou Progresso "🏁 Concluída hoje", limpa totalmente o rascunho.
         if (statusGeral === "Concluído" || progressoHoje === "🏁 Concluída hoje") {
             localStorage.removeItem('rascunho_atividade_v1');
             setTimeout(() => {
