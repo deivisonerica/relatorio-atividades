@@ -308,14 +308,8 @@
             document.getElementById('site').value = d.site || '';
             document.getElementById('local').value = d.local || '';
             document.getElementById('skymunck').value = d.skymunck || 'Não';
-            
-            if (d.progresso === "⏳ Em andamento (continua amanhã)") {
-                document.getElementById('status').value = "Continuação";
-            } else {
-                document.getElementById('status').value = d.status || "Iniciado hoje";
-            }
-
-            document.getElementById('progresso_hoje').value = ''; 
+            document.getElementById('status').value = d.status || "Iniciado hoje";
+            document.getElementById('progresso_hoje').value = d.progresso || ''; 
             document.getElementById('comentarios').value = d.obs || '';
         } else {
             document.getElementById('status').value = "Iniciado hoje";
@@ -396,16 +390,8 @@
 
         window.open(`https://api.whatsapp.com/send?text=${mensagem}`, '_blank');
         
-        localStorage.removeItem('rascunho_atividade_v1');
-
-        setTimeout(() => {
-            form.reset();
-            equipeSelecionada = [];
-            renderBadges();
-            atualizarSelect();
-            atualizarDataHora();
-            carregarRascunho();
-        }, 1000);
+        // Mantém os dados salvos para que o usuário possa consultar ou ajustar depois, 
+        // em vez de zerar automaticamente a tela. Caso queira limpar, basta usar o botão dedicado.
     }
 
     window.onload = function() {
