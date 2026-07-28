@@ -281,10 +281,10 @@
         const inputEtapaHoje = document.getElementById('etapa_hoje');
 
         if (statusVal === "Concluído") {
-            // Se o Status Geral for Concluído, esconde progresso e etapa, mas garante progresso como concluído
+            // Se o Status Geral for Concluído, esconde progresso e etapa, mas atribui "Atividade finalizada" nos bastidores
             grupoProgresso.style.display = "none";
             selectProgresso.removeAttribute("required");
-            selectProgresso.value = "🏁 Concluída hoje";
+            selectProgresso.value = "Atividade finalizada";
 
             grupoEtapaHoje.style.display = "none";
             inputEtapaHoje.removeAttribute("required");
@@ -326,7 +326,7 @@
             local: document.getElementById('local').value,
             skymunck: document.getElementById('skymunck').value,
             status: statusVal,
-            progresso: temEtapa ? progressoVal : (statusVal === "Concluído" ? "🏁 Concluída hoje" : ''),
+            progresso: temEtapa ? progressoVal : (statusVal === "Concluído" ? "Atividade finalizada" : ''),
             obs: document.getElementById('comentarios').value,
             deveReiniciarProximaVez: deveReiniciarProximaVez
         };
@@ -338,7 +338,6 @@
         if (salvo) {
             const d = JSON.parse(salvo);
             
-            // Se o rascunho anterior indicava reinício, limpamos a atividade ou preenchemos do zero
             if (d.deveReiniciarProximaVez && d.status === "Concluído") {
                 localStorage.removeItem('rascunho_atividade_v1');
                 document.getElementById('status').value = "Iniciado hoje";
@@ -399,7 +398,7 @@
         if (!form.checkValidity()) { form.reportValidity(); return; }
 
         const statusGeral = document.getElementById('status').value;
-        const progressoHoje = (statusGeral === "Concluído") ? "🏁 Concluída hoje" : document.getElementById('progresso_hoje').value;
+        const progressoHoje = (statusGeral === "Concluído") ? "Atividade finalizada" : document.getElementById('progresso_hoje').value;
         const etapaHojeVal = document.getElementById('etapa_hoje').value;
         const ativoComEtapa = (statusGeral === "Pendente" || statusGeral === "Em Andamento");
 
@@ -414,7 +413,7 @@
             local: document.getElementById('local').value,
             skymunck: document.getElementById('skymunck').value,
             status: statusGeral,
-            progresso: statusGeral === "Concluído" ? "🏁 Concluída hoje" : (ativoComEtapa ? progressoHoje : "N/A"),
+            progresso: statusGeral === "Concluído" ? "Atividade finalizada" : (ativoComEtapa ? progressoHoje : "N/A"),
             obs: document.getElementById('comentarios').value || "Nenhuma observação."
         };
 
