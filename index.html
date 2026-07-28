@@ -144,11 +144,12 @@
             </select>
         </div>
 
-        <!-- Aparece se Pendente ou Em Andamento -->
+        <!-- Aparece se Pendente, Em Andamento ou Concluído -->
         <div class="form-group" id="grupoProgresso" style="display: none;">
             <label>Progresso de Hoje:</label>
             <select id="progresso_hoje" onchange="salvarRascunho()">
                 <option value="">Selecione...</option>
+                <option value="Atividade finalizada">Atividade finalizada</option>
                 <option value="🏁 Concluída hoje (continua)">🏁 Concluída hoje (continua)</option>
                 <option value="🏁 Concluída hoje">🏁 Concluída hoje</option>
             </select>
@@ -281,16 +282,17 @@
         const inputEtapaHoje = document.getElementById('etapa_hoje');
 
         if (statusVal === "Concluído") {
-            // Se o Status Geral for Concluído, esconde progresso e etapa, mas atribui "Atividade finalizada" nos bastidores
-            grupoProgresso.style.display = "none";
-            selectProgresso.removeAttribute("required");
+            // Se Status Geral for Concluído, exibe o bloco de progresso travado com "Atividade finalizada"
+            grupoProgresso.style.display = "block";
             selectProgresso.value = "Atividade finalizada";
+            selectProgresso.disabled = true;
 
             grupoEtapaHoje.style.display = "none";
             inputEtapaHoje.removeAttribute("required");
             inputEtapaHoje.value = "";
         } else if (statusVal === "Pendente" || statusVal === "Em Andamento") {
             grupoProgresso.style.display = "block";
+            selectProgresso.disabled = false;
             selectProgresso.setAttribute("required", "required");
             
             grupoEtapaHoje.style.display = "block";
@@ -301,6 +303,7 @@
             }
         } else {
             grupoProgresso.style.display = "none";
+            selectProgresso.disabled = false;
             selectProgresso.removeAttribute("required");
             selectProgresso.value = "";
 
@@ -326,7 +329,7 @@
             local: document.getElementById('local').value,
             skymunck: document.getElementById('skymunck').value,
             status: statusVal,
-            progresso: temEtapa ? progressoVal : (statusVal === "Concluído" ? "Atividade finalizada" : ''),
+            progresso: statusVal === "Concluído" ? "Atividade finalizada" : (temEtapa ? progressoVal : ''),
             obs: document.getElementById('comentarios').value,
             deveReiniciarProximaVez: deveReiniciarProximaVez
         };
@@ -383,6 +386,7 @@
         if (confirm("Deseja realmente limpar todos os campos e resetar o rascunho salvo?")) {
             localStorage.removeItem('rascunho_atividade_v1');
             document.getElementById('mainForm').reset();
+            document.getElementById('progresso_hoje').disabled = false;
             equipeSelecionada = [];
             renderBadges();
             atualizarSelect();
@@ -395,10 +399,18 @@
     async function enviarRelatorio() {
         const form = document.getElementById('mainForm');
         if (equipeSelecionada.length === 0) { alert("Adicione pelo menos um técnico!"); return; }
+        
+        // Garante que o campo desabilitado seja lido corretamente no submit
+        const selectProgresso = document.getElementById('progresso_hoje');
+        selectProgresso.disabled = false;
+        const progressoHojeVal = selectProgresso.value;
+        if (document.getElementById('status').value === "Concluído") {
+            selectProgresso.disabled = true;
+        }
+
         if (!form.checkValidity()) { form.reportValidity(); return; }
 
         const statusGeral = document.getElementById('status').value;
-        const progressoHoje = (statusGeral === "Concluído") ? "Atividade finalizada" : document.getElementById('progresso_hoje').value;
         const etapaHojeVal = document.getElementById('etapa_hoje').value;
         const ativoComEtapa = (statusGeral === "Pendente" || statusGeral === "Em Andamento");
 
@@ -413,7 +425,7 @@
             local: document.getElementById('local').value,
             skymunck: document.getElementById('skymunck').value,
             status: statusGeral,
-            progresso: statusGeral === "Concluído" ? "Atividade finalizada" : (ativoComEtapa ? progressoHoje : "N/A"),
+            progresso: statusGeral === "Concluído" ? "Atividade finalizada" : (ativoComEtapa ? progressoHojeVal : "N/A"),
             obs: document.getElementById('comentarios').value || "Nenhuma observação."
         };
 
@@ -424,10 +436,9 @@
         const sep = "----------------------------------------";
         const equipeWhats = encodeURIComponent(equipeSelecionada.join('\n'));
         
-        let blocoExtraWhats = "";
+        let blocoExtraWhats = `*Progresso de Hoje:*%0A${d.progresso}%0A${sep}%0A`;
         if (ativoComEtapa) {
-            blocoExtraWhats = `*Progresso de Hoje:*%0A${d.progresso}%0A${sep}%0A` +
-                              `*Etapa Realizada Hoje:*%0A${d.etapa_hoje}%0A${sep}%0A`;
+            blocoExtraWhats += `*Etapa Realizada Hoje:*%0A${d.etapa_hoje}%0A${sep}%0A`;
         }
 
         const mensagem = `*RELATÓRIO DE ATIVIDADE*%0A` +
@@ -457,10 +468,11 @@
         window.open(`https://api.whatsapp.com/send?text=${mensagem}`, '_blank');
         
         // Limpeza automática se concluído
-        if (statusGeral === "Concluído" || progressoHoje === "🏁 Concluída hoje") {
+        if (statusGeral === "Concluído" || progressoHojeVal === "🏁 Concluída hoje") {
             localStorage.removeItem('rascunho_atividade_v1');
             setTimeout(() => {
                 form.reset();
+                document.getElementById('progresso_hoje').disabled = false;
                 equipeSelecionada = [];
                 renderBadges();
                 atualizarSelect();
