@@ -150,7 +150,7 @@
             <select id="progresso_hoje" onchange="salvarRascunho()">
                 <option value="">Selecione...</option>
                 <option value="Atividade finalizada">Atividade finalizada</option>
-                <option value="🏁 Concluída hoje (continua)">🏁 Concluída hoje (continua)</option>
+                <option value="🏁 Concluída hoje(continua)">🏁 Concluída hoje(continua)</option>
                 <option value="🏁 Concluída hoje">🏁 Concluída hoje</option>
             </select>
         </div>
@@ -282,7 +282,6 @@
         const inputEtapaHoje = document.getElementById('etapa_hoje');
 
         if (statusVal === "Concluído") {
-            // Se Status Geral for Concluído, exibe o bloco de progresso travado com "Atividade finalizada"
             grupoProgresso.style.display = "block";
             selectProgresso.value = "Atividade finalizada";
             selectProgresso.disabled = true;
@@ -290,17 +289,23 @@
             grupoEtapaHoje.style.display = "none";
             inputEtapaHoje.removeAttribute("required");
             inputEtapaHoje.value = "";
-        } else if (statusVal === "Pendente" || statusVal === "Em Andamento") {
+        } else if (statusVal === "Em Andamento") {
             grupoProgresso.style.display = "block";
-            selectProgresso.disabled = false;
-            selectProgresso.setAttribute("required", "required");
+            selectProgresso.value = "🏁 Concluída hoje(continua)";
+            selectProgresso.disabled = true;
             
             grupoEtapaHoje.style.display = "block";
             inputEtapaHoje.setAttribute("required", "required");
-
-            if (statusVal === "Em Andamento" && !selectProgresso.value) {
-                selectProgresso.value = "🏁 Concluída hoje (continua)";
+        } else if (statusVal === "Pendente") {
+            grupoProgresso.style.display = "block";
+            selectProgresso.disabled = false;
+            selectProgresso.setAttribute("required", "required");
+            if (selectProgresso.value === "🏁 Concluída hoje(continua)") {
+                selectProgresso.value = "";
             }
+            
+            grupoEtapaHoje.style.display = "block";
+            inputEtapaHoje.setAttribute("required", "required");
         } else {
             grupoProgresso.style.display = "none";
             selectProgresso.disabled = false;
@@ -318,7 +323,7 @@
         const progressoVal = document.getElementById('progresso_hoje').value;
         const temEtapa = (statusVal === "Pendente" || statusVal === "Em Andamento");
 
-        const deveReiniciarProximaVez = (statusVal === "Concluído" || (temEtapa && progressoVal === "🏁 Concluída hoje (continua)"));
+        const deveReiniciarProximaVez = (statusVal === "Concluído" || (temEtapa && progressoVal === "🏁 Concluída hoje(continua)"));
 
         const dadosRascunho = {
             atividade: document.getElementById('atividade').value,
@@ -329,7 +334,7 @@
             local: document.getElementById('local').value,
             skymunck: document.getElementById('skymunck').value,
             status: statusVal,
-            progresso: statusVal === "Concluído" ? "Atividade finalizada" : (temEtapa ? progressoVal : ''),
+            progresso: statusVal === "Concluído" ? "Atividade finalizada" : (statusVal === "Em Andamento" ? "🏁 Concluída hoje(continua)" : (temEtapa ? progressoVal : '')),
             obs: document.getElementById('comentarios').value,
             deveReiniciarProximaVez: deveReiniciarProximaVez
         };
@@ -400,19 +405,30 @@
         const form = document.getElementById('mainForm');
         if (equipeSelecionada.length === 0) { alert("Adicione pelo menos um técnico!"); return; }
         
-        // Garante que o campo desabilitado seja lido corretamente no submit
         const selectProgresso = document.getElementById('progresso_hoje');
         selectProgresso.disabled = false;
         const progressoHojeVal = selectProgresso.value;
-        if (document.getElementById('status').value === "Concluído") {
+        const statusGeral = document.getElementById('status').value;
+
+        if (statusGeral === "Concluído") {
+            selectProgresso.disabled = true;
+        } else if (statusGeral === "Em Andamento") {
             selectProgresso.disabled = true;
         }
 
         if (!form.checkValidity()) { form.reportValidity(); return; }
 
-        const statusGeral = document.getElementById('status').value;
         const etapaHojeVal = document.getElementById('etapa_hoje').value;
         const ativoComEtapa = (statusGeral === "Pendente" || statusGeral === "Em Andamento");
+
+        let progressoFinal = "N/A";
+        if (statusGeral === "Concluído") {
+            progressoFinal = "Atividade finalizada";
+        } else if (statusGeral === "Em Andamento") {
+            progressoFinal = "🏁 Concluída hoje(continua)";
+        } else if (ativoComEtapa) {
+            progressoFinal = progressoHojeVal;
+        }
 
         const d = {
             atividade: document.getElementById('atividade').value,
@@ -425,7 +441,7 @@
             local: document.getElementById('local').value,
             skymunck: document.getElementById('skymunck').value,
             status: statusGeral,
-            progresso: statusGeral === "Concluído" ? "Atividade finalizada" : (ativoComEtapa ? progressoHojeVal : "N/A"),
+            progresso: progressoFinal,
             obs: document.getElementById('comentarios').value || "Nenhuma observação."
         };
 
@@ -468,7 +484,7 @@
         window.open(`https://api.whatsapp.com/send?text=${mensagem}`, '_blank');
         
         // Limpeza automática se concluído
-        if (statusGeral === "Concluído" || progressoHojeVal === "🏁 Concluída hoje") {
+        if (statusGeral === "Concluído" || progressoFinal === "🏁 Concluída hoje") {
             localStorage.removeItem('rascunho_atividade_v1');
             setTimeout(() => {
                 form.reset();
