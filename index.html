@@ -320,6 +320,7 @@
     }
 
     function salvarRascunho() {
+        
         const statusVal = document.getElementById('status').value;
         const progressoVal = document.getElementById('progresso_hoje').value;
         const temEtapa = (statusVal === "Pendente" || statusVal === "Em Andamento");
@@ -327,7 +328,7 @@
         const deveReiniciarProximaVez = (statusVal === "Concluído" || (temEtapa && progressoVal === "🏁 Concluída hoje(continua)"));
 
         const dadosRascunho = {
-            oc: document.getElementById('oc').value,
+            //oc: document.getElementById('oc').innerText,
             atividade: document.getElementById('atividade').value,
             etapa_hoje: temEtapa ? document.getElementById('etapa_hoje').value : '',
             chamado: document.getElementById('chamado').value,
@@ -433,7 +434,7 @@
         }
 
         const d = {
-            oc: document.getElementById('oc').value,
+            //oc: document.getElementById('oc').innerText,
             atividade: document.getElementById('atividade').value,
             etapa_hoje: ativoComEtapa ? etapaHojeVal : "N/A",
             data: document.getElementById('data_auto').value,
@@ -467,6 +468,8 @@
             `*Data:*%0A${d.data}%0A` +
             `${sep}%0A` +
             `*Hora:*%0A${d.hora}%0A` +
+            `${sep}%0A` +
+            `*Nº OC:*%0A${d.oc}%0A` +
             `${sep}%0A` +
             `*Nº Chamado:*%0A${d.chamado}%0A` +
             `${sep}%0A` +
