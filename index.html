@@ -328,7 +328,7 @@
         const deveReiniciarProximaVez = (statusVal === "Concluído" || (temEtapa && progressoVal === "🏁 Concluída hoje(continua)"));
 
         const dadosRascunho = {
-            oc: document.getElementById('oc').innerText,
+           // oc: document.getElementById('oc').innerText,
             atividade: document.getElementById('atividade').value,
             etapa_hoje: temEtapa ? document.getElementById('etapa_hoje').value : '',
             chamado: document.getElementById('chamado').value,
@@ -434,7 +434,7 @@
         }
 
         const d = {
-            oc: document.getElementById('oc').innerText,
+            //oc: document.getElementById('oc').innerText,
             atividade: document.getElementById('atividade').value,
             etapa_hoje: ativoComEtapa ? etapaHojeVal : "N/A",
             data: document.getElementById('data_auto').value,
@@ -462,7 +462,7 @@
         }
 
         const mensagem = `*RELATÓRIO DE ATIVIDADE*%0A` +
-            `*%0A${d.oc}%0A` +
+            `*Nº OC: 2139905*%0A${d.oc}%0A` +
             `${sep}%0A` +
             `${sep}%0A%0A` +
             `*Atividade:*%0A${d.atividade}%0A` +
