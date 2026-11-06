@@ -453,7 +453,8 @@
         fetch(URL_GOOGLE_SHEETS, { method: 'POST', mode: 'no-cors', body: JSON.stringify(d) });
 
         // Envio WhatsApp
-        const sep = "----------------------------------------";
+        const sep = "─────────────────────────────────";
+        //const sep = "----------------------------------------";
         const equipeWhats = encodeURIComponent(equipeSelecionada.join('\n'));
         
         let blocoExtraWhats = `*Progresso de Hoje:*%0A${d.progresso}%0A${sep}%0A`;
@@ -462,6 +463,7 @@
         }
 
         const mensagem = `*RELATÓRIO DE ATIVIDADE*%0A` +
+            `${sep}%0A` +
             `*Nº OC: 2139905*%0A${d.oc}%0A` +
             `${sep}%0A` +
             `*Atividade:*%0A${d.atividade}%0A` +
