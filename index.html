@@ -475,32 +475,76 @@
             blocoExtraWhats += `*Etapa Realizada Hoje:*%0A${d.etapa_hoje}%0A${sep}%0A`;
         }
 
-        const mensagem = `*RELATÓRIO DE ATIVIDADE*%0A` +
-            `${sep}%0A` +
-            `*Nº OC:* 2139905%0A` +
-            `${sep}%0A` +
-            `*Atividade:*%0A${d.atividade}%0A` +
-            `${sep}%0A` +
-            `*Data:*%0A${d.data}%0A` +
-            `${sep}%0A` +
-            `*Hora:*%0A${d.hora}%0A` +
-            `${sep}%0A` +
-            `*Nº Chamado:*%0A${d.chamado}%0A` +
-            `${sep}%0A` +
-            `*Colaboradores:*%0A${equipeWhats}%0A` +
-            `${sep}%0A` +
-            `*Site:*%0A${d.site}%0A` +
-            `${sep}%0A` +
-            `*Local:*%0A${d.local}%0A` +
-            `${sep}%0A` +
-            `*Utilização SkyMunck:*%0A${d.skymunck}%0A` +
-            `${sep}%0A` +
-            `*Status Geral:*%0A${d.status}%0A` +
-            `${sep}%0A` +
-            blocoExtraWhats +
-            `*Comentários:*%0A${d.obs}%0A` +
-            `${sep}`;
+        //const mensagem = `*RELATÓRIO DE ATIVIDADE*%0A` +
+            //`${sep}%0A` +
+            //`*Nº OC:* 2139905%0A` +
+            //`${sep}%0A` +
+            //`*Atividade:*%0A${d.atividade}%0A` +
+            //`${sep}%0A` +
+            //`*Data:*%0A${d.data}%0A` +
+            //`${sep}%0A` +
+            //`*Hora:*%0A${d.hora}%0A` +
+            //`${sep}%0A` +
+            //`*Nº Chamado:*%0A${d.chamado}%0A` +
+            //`${sep}%0A` +
+            //`*Colaboradores:*%0A${equipeWhats}%0A` +
+            //`${sep}%0A` +
+            //`*Site:*%0A${d.site}%0A` +
+            //`${sep}%0A` +
+            //`*Local:*%0A${d.local}%0A` +
+            //`${sep}%0A` +
+            //`*Utilização SkyMunck:*%0A${d.skymunck}%0A` +
+            //`${sep}%0A` +
+            //`*Status Geral:*%0A${d.status}%0A` +
+            //`${sep}%0A` +
+            //blocoExtraWhats +
+            //`*Comentários:*%0A${d.obs}%0A` +
+            //`${sep}`;
 
+const mensagem =
+`📋 *RELATÓRIO DE ATIVIDADE*%0A%0A` +
+
+`📌 *DADOS DA ATIVIDADE*%0A` +
+`${sep}%0A` +
+`📄 *Nº OC:* 2139905%0A` +
+`🛠️ *Atividade:* ${d.atividade}%0A` +
+`📅 *Data:* ${d.data}%0A` +
+`🕒 *Hora:* ${d.hora}%0A%0A` +
+
+`🚨 *CHAMADO*%0A` +
+`${sep}%0A` +
+`🎫 *Nº Chamado:* ${d.chamado}%0A%0A` +
+
+`👥 *EQUIPE TÉCNICA*%0A` +
+`${sep}%0A` +
+`${equipeWhats}%0A%0A` +
+
+`📍 *LOCALIZAÇÃO*%0A` +
+`${sep}%0A` +
+`🏢 *Site:* ${d.site}%0A` +
+`📌 *Local:* ${d.local}%0A%0A` +
+
+`🚚 *RECURSOS UTILIZADOS*%0A` +
+`${sep}%0A` +
+`🏗️ *SkyMunck:* ${d.skymunck}%0A%0A` +
+
+`📊 *STATUS DA ATIVIDADE*%0A` +
+`${sep}%0A` +
+`📈 *Status Geral:* ${d.status}%0A%0A` +
+
+blocoExtraWhats +
+
+`📝 *COMENTÁRIOS*%0A` +
+`${sep}%0A` +
+`${d.obs}%0A`;
+
+
+
+
+
+
+
+        
         window.open(`https://api.whatsapp.com/send?text=${mensagem}`, '_blank');
         
         // Limpeza automática se concluído
