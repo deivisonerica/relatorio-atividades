@@ -470,7 +470,10 @@
         //const sep = "----------------------------------------";
         const equipeWhats = encodeURIComponent(equipeSelecionada.join('\n'));
         
-        let blocoExtraWhats = `*Progresso de Hoje:*%0A${d.progresso}%0A${sep}%0A`;
+        //let blocoExtraWhats = `*Progresso de Hoje:*%0A${d.progresso}%0A${sep}%0A`;
+        let blocoExtraWhats =
+        `*Progresso de Hoje:*%0A` +
+        `${d.progresso}%0A%0A`;
         if (ativoComEtapa) {
             blocoExtraWhats += `*Etapa Realizada Hoje:*%0A${d.etapa_hoje}%0A${sep}%0A`;
         }
