@@ -504,10 +504,8 @@
 const mensagem =
 `📋 *RELATÓRIO DE ATIVIDADE*%0A%0A` +
 
-`📌 *DADOS DA ATIVIDADE*%0A` +
-//`${sep}%0A` +
+`🆔 *IDENTIFICAÇÃO*%0A` +
 `📄 *Nº OC:* 2139905%0A` +
-`🛠️ *Atividade:* ${d.atividade}%0A` +
 `📅 *Data:* ${d.data}%0A` +
 `🕒 *Hora:* ${d.hora}%0A%0A` +
 
@@ -516,31 +514,37 @@ const mensagem =
 `🚨 *CHAMADO*%0A` +
 `🎫 *Nº Chamado:* ${d.chamado}%0A%0A` +
 
-`👥 *EQUIPE TÉCNICA*%0A` +
-`${sep}%0A` +
-`${equipeWhats}%0A%0A` +
-
 `${sep}%0A` +
 
-`📍 *LOCALIZAÇÃO*%0A` +
+`📍 *LOCAL*%0A` +
 `🏢 *Site:* ${d.site}%0A` +
 `📌 *Local:* ${d.local}%0A%0A` +
 
 `${sep}%0A` +
 
-`🚚 *RECURSOS UTILIZADOS*%0A` +
-`🏗️ *SkyMunck:* ${d.skymunck}%0A%0A` +
+`👷 *EQUIPE*%0A` +
+`${equipeWhats}%0A%0A` +
 
 `${sep}%0A` +
 
-`📊 *STATUS DA ATIVIDADE*%0A` +
+`🔧 *EXECUÇÃO DA ATIVIDADE*%0A` +
+`${d.atividade}%0A%0A` +
+
+`${sep}%0A` +
+
+`✅ *STATUS*%0A` +
 `📈 *Status Geral:* ${d.status}%0A%0A` +
+
+`${sep}%0A` +
+
+`🚚 *RECURSOS*%0A` +
+`🏗️ *SkyMunck:* ${d.skymunck}%0A%0A` +
 
 blocoExtraWhats +
 
 `${sep}%0A` +
 
-`📝 *COMENTÁRIOS*%0A` +
+`📝 *OBSERVAÇÕES*%0A` +
 `${d.obs}%0A`;
 
 
