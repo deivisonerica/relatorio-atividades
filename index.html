@@ -464,18 +464,20 @@
             progressoFinal = progressoHojeVal;
         }
 
+        const tipoChamado =
+             document.getElementById('tipo_chamado').value;
+            const numeroChamado =
+            document.getElementById('chamado').value.trim();
+            const chamadoCompleto =
+            `${tipoChamado}${numeroChamado}`;
+
         const d = {
             atividade: document.getElementById('atividade').value,
             etapa_hoje: ativoComEtapa ? etapaHojeVal : "N/A",
             data: document.getElementById('data_auto').value,
             hora: document.getElementById('hora_auto').value,
             //chamado: document.getElementById('chamado').value.toUpperCase(),
-             const tipoChamado =
-             document.getElementById('tipo_chamado').value;
-            const numeroChamado =
-            document.getElementById('chamado').value.trim();
-            const chamadoCompleto =
-            `${tipoChamado}${numeroChamado}`;
+            chamado: chamadoCompleto,
 
 
 
