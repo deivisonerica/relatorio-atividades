@@ -98,10 +98,27 @@
             </div>
         </div>
 
-        <div class="form-group">
-            <label>Nº Chamado:</label>
-            <input type="text" id="chamado" placeholder="Ex: INC1234567" oninput="salvarRascunho()" required>
-        </div>
+<div class="form-group">
+    <label>Tipo de Chamado:</label>
+    <select id="tipo_chamado" onchange="salvarRascunho()" required>
+        <option value="INC">🚨 Incidente</option>
+        <option value="SCTASK">📋 Solicitação</option>
+    </select>
+</div>
+
+<div class="form-group">
+    <label>Nº Chamado:</label>
+    <input type="text"
+           id="chamado"
+           placeholder="Ex: 1234567"
+           oninput="salvarRascunho()"
+           required>
+</div>
+
+
+        
+
+        
 
         <div class="form-group">
             <label>Equipe Técnica:</label>
@@ -452,7 +469,18 @@
             etapa_hoje: ativoComEtapa ? etapaHojeVal : "N/A",
             data: document.getElementById('data_auto').value,
             hora: document.getElementById('hora_auto').value,
-            chamado: document.getElementById('chamado').value.toUpperCase(),
+            //chamado: document.getElementById('chamado').value.toUpperCase(),
+             const tipoChamado =
+             document.getElementById('tipo_chamado').value;
+            const numeroChamado =
+            document.getElementById('chamado').value.trim();
+            const chamadoCompleto =
+            `${tipoChamado}${numeroChamado}`;
+
+
+
+
+            
             equipe: equipeSelecionada.join(', '), 
             site: document.getElementById('site').value,
             local: document.getElementById('local').value,
